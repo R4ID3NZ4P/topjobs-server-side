@@ -30,13 +30,13 @@ const client = new MongoClient(uri, {
       app.get("/jobs", async (req, res) => {
         const result = await jobCollection.find().toArray();
         res.send(result);
-      })
+      });
 
       app.get("/job/:id", async (req, res) => {
         const query = { _id: new ObjectId(req.params.id) };
         const result = await jobCollection.findOne(query);
         res.send(result);
-      })
+      });
 
       app.post("/apply", async (req, res) => {
         const form = req.body;
@@ -45,7 +45,13 @@ const client = new MongoClient(uri, {
           {_id: new ObjectId(form.jobId)},
           { $inc: {applicants: 1}});
         res.send(result);
-      })
+      });
+
+      app.post("/add", async (req, res) => {
+        const job = req.body;
+        const result = await jobCollection.insertOne(job);
+        res.send(result);
+      });
 
       await client.db("admin").command({ ping: 1 });
       console.log("Pinged your deployment. You successfully connected to MongoDB!");
