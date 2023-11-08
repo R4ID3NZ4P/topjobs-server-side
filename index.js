@@ -38,6 +38,12 @@ const client = new MongoClient(uri, {
         res.send(result);
       });
 
+      app.get("/myjobs", async (req, res) => {
+        const query = { username: req.query.username};
+        const result = await jobCollection.find(query).toArray();
+        res.send(result);
+      });
+
       app.post("/apply", async (req, res) => {
         const form = req.body;
         const result = await appliedCollection.insertOne(form);
@@ -50,6 +56,38 @@ const client = new MongoClient(uri, {
       app.post("/add", async (req, res) => {
         const job = req.body;
         const result = await jobCollection.insertOne(job);
+        res.send(result);
+      });
+
+      app.put("/myjobs/:id", async (req, res) => {
+        const filter = { _id: new ObjectId(req.params.id)};
+        const {
+          username,
+          image,
+          title,
+          category,
+          salary,
+          description,
+          postdate,
+          deadline,
+          applicants
+        } = req.body;
+
+        const updatedJob = {
+          $set: {
+            username,
+            image,
+            title,
+            category,
+            salary,
+            description,
+            postdate,
+            deadline,
+            applicants
+          }
+        };
+
+        const result = await jobCollection.updateOne(filter, updatedJob);
         res.send(result);
       });
 
